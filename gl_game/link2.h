@@ -101,6 +101,27 @@ public:
 			trace = trace->adj[L2_RIGHT];
 		}
 	}
+	void diamond_poll() {
+		float sum = 0.0f;
+		sum += *(adj[L2_LEFT ]->adj[L2_UP  ]->data);
+		sum += *(adj[L2_LEFT ]->adj[L2_DOWN]->data);
+		sum += *(adj[L2_RIGHT]->adj[L2_UP  ]->data);
+		sum += *(adj[L2_RIGHT]->adj[L2_DOWN]->data);
+		if (data != NULL)
+			delete data;
+		data = new float(sum / 4.0f);
+	}
+	void square_poll() {
+		float sum = 0.0f, count = 0.0f;
+		if (adj[L2_LEFT ] != NULL) { sum += *(adj[L2_LEFT ]->data); count += 1.0f; }
+		if (adj[L2_RIGHT] != NULL) { sum += *(adj[L2_RIGHT]->data); count += 1.0f; }
+		if (adj[L2_UP   ] != NULL) { sum += *(adj[L2_UP   ]->data); count += 1.0f; }
+		if (adj[L2_DOWN ] != NULL) { sum += *(adj[L2_DOWN ]->data); count += 1.0f; }
+		if (data != NULL)
+			delete data;
+		data = new float(sum / count);
+	}
+
 };
 
 #endif

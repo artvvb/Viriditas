@@ -16,46 +16,66 @@ Coord myorigin(new float[3]{0.0, 0.0, 0.0});
 
 const Color white(1.0f), gray(0.5f), black(0.0f);
 
+Color normalize(float foo) {
+	//0.0f <= foo <= 1.0f
+	return Color(foo);
+}
+
 class Grid {
 public:
-	Link2<Color> *root;
+	Link2<float> *root;
 	int n, m;
 
 	Grid() {
 		n = 2;
 		m = 2;
 
-		root = new Link2<Color>(white);
+		root = new Link2<float>(1.0f);
 
-		root->insert(L2_RIGHT, white);
-		root->insert(L2_DOWN, white);
-		root->adj[L2_RIGHT]->insert(L2_DOWN, white);
+		root->insert(L2_RIGHT, 1.0f);
+		root->insert(L2_DOWN, 1.0f);
+		root->adj[L2_RIGHT]->insert(L2_DOWN, 1.0f);
 		root->adj[L2_DOWN]->connect(L2_RIGHT, root->adj[L2_RIGHT]->adj[L2_DOWN]);
 	}
 
 	void insert_horizontal() {
-		Link2<Color> *trace = root;
-		while (trace != NULL && trace->adj[L2_RIGHT] != NULL) {
-			cout << "check" << endl;
-			trace->insert_col(black);
-			cout << "check" << endl;
-			trace = trace->adj[L2_RIGHT]->adj[L2_RIGHT];
+		Link2<float> *trace = root->adj[L2_DOWN];
+		while (trace != NULL) {
+			trace->adj[L2_UP]->insert_row(0.0f);
+			trace = trace->adj[L2_DOWN];
 		}
 	}
 
 	void insert_vertical() {
-		cout << "WIDTH: " << root->get_width() << endl;
-		for (int i = 0; i < 2 * (n - 1) + 1; i++) {
-			for (int j = 0; j < n - 1; j += 1) {
-				root->find(i, 0)->insert(L2_DOWN, black);
+		Link2<float> *trace = root->adj[L2_RIGHT];
+		while (trace != NULL) {
+			trace->adj[L2_LEFT]->insert_col(0.0f);
+			trace = trace->adj[L2_RIGHT];
+		}
+	}
+
+	void diamond_poll() {
+		Link2<float> *trace[2] = { root->adj[L2_RIGHT]->adj[L2_DOWN], NULL };
+		while (trace[0] != NULL) {
+			trace[1] = trace[0];
+			while (trace[1] != NULL) {
+				trace[1]->diamond_poll();
+				trace[1] = trace[1]->adj[L2_DOWN]->adj[L2_DOWN];
 			}
+			trace[0] = trace[0]->adj[L2_RIGHT]->adj[L2_RIGHT];
 		}
 	}
 
 	void ds_insert() {
-		root->insert_row(black);
-		root->insert_col(black);
-		m++; n++;
+		//root->insert_row(0.0f);
+		//root->insert_col(0.0f);
+		if (m < 65 && n < 65) {
+			insert_horizontal();
+			insert_vertical();
+			diamond_poll();
+			m = 2 * m - 1;
+			n = 2 * n - 1;
+		}
 		//insert_horizontal();
 		//n += n - 1;
 	}
@@ -71,7 +91,7 @@ public:
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < m; j++) {
 				for (int c = 0; c < 4; c++) {
-					root->find(i, j)->data->render();
+					normalize(*(root->find(i, j)->data)).render();
 					normalize(
 						vector<int>{ i + i_corners[c][0], j + i_corners[c][1] }, 
 						vector<int>{ n, m }
