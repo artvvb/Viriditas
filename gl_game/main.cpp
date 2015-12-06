@@ -19,24 +19,47 @@ const Color white(1.0f), gray(0.5f), black(0.0f);
 class Grid {
 public:
 	Link2<Color> *root;
-	int n;
+	int n, m;
 
 	Grid() {
 		n = 2;
+		m = 2;
 
 		root = new Link2<Color>(white);
 
-		root->adj[L2_RIGHT] = new Link2<Color>(black);
-		root->adj[L2_RIGHT]->adj[L2_LEFT] = root;
-		root->adj[L2_RIGHT]->adj[L2_DOWN] = new Link2<Color>(white);
-		root->adj[L2_RIGHT]->adj[L2_DOWN]->adj[L2_UP] = root->adj[L2_RIGHT];
-
-		root->adj[L2_DOWN] = new Link2<Color>(black);
-		root->adj[L2_DOWN]->adj[L2_UP] = root;
-		root->adj[L2_DOWN]->adj[L2_RIGHT] = root->adj[L2_RIGHT]->adj[L2_DOWN];
-		
-		root->adj[L2_RIGHT]->adj[L2_DOWN] = root->adj[L2_DOWN]->adj[L2_RIGHT];
+		root->insert(L2_RIGHT, white);
+		root->insert(L2_DOWN, white);
+		root->adj[L2_RIGHT]->insert(L2_DOWN, white);
+		root->adj[L2_DOWN]->connect(L2_RIGHT, root->adj[L2_RIGHT]->adj[L2_DOWN]);
 	}
+
+	void insert_horizontal() {
+		Link2<Color> *trace = root;
+		while (trace != NULL && trace->adj[L2_RIGHT] != NULL) {
+			cout << "check" << endl;
+			trace->insert_col(black);
+			cout << "check" << endl;
+			trace = trace->adj[L2_RIGHT]->adj[L2_RIGHT];
+		}
+	}
+
+	void insert_vertical() {
+		cout << "WIDTH: " << root->get_width() << endl;
+		for (int i = 0; i < 2 * (n - 1) + 1; i++) {
+			for (int j = 0; j < n - 1; j += 1) {
+				root->find(i, 0)->insert(L2_DOWN, black);
+			}
+		}
+	}
+
+	void ds_insert() {
+		root->insert_row(black);
+		root->insert_col(black);
+		m++; n++;
+		//insert_horizontal();
+		//n += n - 1;
+	}
+
 	void render() {
 		static const int i_corners[4][2] = {
 			{ 0, 0 },
@@ -45,14 +68,13 @@ public:
 			{ 1, 0 }
 		};
 		glBegin(GL_QUADS);
-
 		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
+			for (int j = 0; j < m; j++) {
 				for (int c = 0; c < 4; c++) {
-					root->find(i, j).render();
+					root->find(i, j)->data->render();
 					normalize(
 						vector<int>{ i + i_corners[c][0], j + i_corners[c][1] }, 
-						vector<int>{ n, n }
+						vector<int>{ n, m }
 					).render();
 				}
 			}
@@ -90,6 +112,9 @@ void keyboard(unsigned char key, int x, int y)
 	switch (key) {
 	case 27:
 		exit(0);
+		break;
+	case ' ':
+		mygrid->ds_insert();
 		break;
 	default:
 		break;
