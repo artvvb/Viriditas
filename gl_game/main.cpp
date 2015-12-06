@@ -1,7 +1,7 @@
-#pragma once
 #include "main.h"
 #include "coord.h"
-#include "tex.h"
+#include "color.h"
+#include "link2.h"
 
 float tick = 0.0;
 
@@ -14,45 +14,29 @@ Coord corners[4] = {
 
 Coord myorigin(new float[3]{0.0, 0.0, 0.0});
 
-class Color {
-public:
-	float r, g, b;
-
-	Color(float gray = 0.0f) {
-		r = g = b = gray;
-	}
-	void render() const {
-		glColor3f(r, g, b);
-	}
-};
-
-float normalize(int x, int n) {
-	return 2.0f * ((float)x / (float)n) - 1.0f;
-}
-
-Coord normalize(vector<int> x, vector<int> n) {
-	Coord ret;
-	ret['x'] = normalize(x[0], n[0]);
-	ret['y'] = normalize(x[1], n[1]);
-	ret['z'] = 0.0f;
-	return ret;
-}
-
 const Color white(1.0f), gray(0.5f), black(0.0f);
 
 class Grid {
 public:
-	vector<vector<Color>> data;
-	Grid() {}
-	Grid(int n, int m) {
-		for (int i = 0; i < n; i++) {
-			data.push_back(vector<Color>());
-			for (int j = 0; j < m; j++) {
-				data[i].push_back((i % 2 == j % 2) ? white : black);
-			}
-		}
-	}
+	Link2<Color> *root;
+	int n;
 
+	Grid() {
+		n = 2;
+
+		root = new Link2<Color>(white);
+
+		root->adj[L2_RIGHT] = new Link2<Color>(black);
+		root->adj[L2_RIGHT]->adj[L2_LEFT] = root;
+		root->adj[L2_RIGHT]->adj[L2_DOWN] = new Link2<Color>(white);
+		root->adj[L2_RIGHT]->adj[L2_DOWN]->adj[L2_UP] = root->adj[L2_RIGHT];
+
+		root->adj[L2_DOWN] = new Link2<Color>(black);
+		root->adj[L2_DOWN]->adj[L2_UP] = root;
+		root->adj[L2_DOWN]->adj[L2_RIGHT] = root->adj[L2_RIGHT]->adj[L2_DOWN];
+		
+		root->adj[L2_RIGHT]->adj[L2_DOWN] = root->adj[L2_DOWN]->adj[L2_RIGHT];
+	}
 	void render() {
 		static const int i_corners[4][2] = {
 			{ 0, 0 },
@@ -60,19 +44,22 @@ public:
 			{ 1, 1 },
 			{ 1, 0 }
 		};
+		glBegin(GL_QUADS);
 
-		for (int i = 0; i < data.size(); i++) {
-			for (int j = 0; j < data[i].size(); j++) {
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
 				for (int c = 0; c < 4; c++) {
-					data[i][j].render();
+					root->find(i, j).render();
 					normalize(
 						vector<int>{ i + i_corners[c][0], j + i_corners[c][1] }, 
-						vector<int>{ (int)data.size(), (int)data[i].size() }
+						vector<int>{ n, n }
 					).render();
 				}
 			}
 		}
+		glEnd();
 	}
+
 };
 
 Grid *mygrid;
@@ -81,16 +68,10 @@ void display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.5, 0.5, 0.5, 1.0);
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	glBindTexture(GL_TEXTURE_2D, texName);
-	glBegin(GL_QUADS);
 
 	mygrid->render();
-
-	glEnd();
-	glFlush();
-	glDisable(GL_TEXTURE_2D);
+	
+	glutSwapBuffers();
 }
 
 void reshape(int w, int h)
@@ -132,7 +113,7 @@ int main(int argc, char** argv)
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow(argv[0]);
 	
-	mygrid = new Grid(4, 4);
+	mygrid = new Grid();
 
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);

@@ -32,4 +32,17 @@ Coord get_vector(Coord& origin, const float& angle, const float& magnitude) {
 	return dest;
 }
 
+
+float normalize(int x, int n) {
+	return 2.0f * ((float)x / (float)n) - 1.0f;
+}
+
+Coord normalize(vector<int> x, vector<int> n) {
+	Coord ret;
+	ret['x'] = normalize(x[0], n[0]);
+	ret['y'] = normalize(x[1], n[1]);
+	ret['z'] = 0.0f;
+	return ret;
+}
+
 #endif
