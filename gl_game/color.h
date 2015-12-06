@@ -26,9 +26,7 @@ public:
 		g = other.g;
 		b = other.b;
 	}
-	void render() const {
-		glColor3f(r, g, b);
-	}
+	
 };
 
 #endif

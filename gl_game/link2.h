@@ -3,18 +3,14 @@
 
 #include "main.h"
 
+//likely to change this to be 2 cardinal directions as 0 and 1, then have their opposites be 3-dir
 #define L2_LEFT 0
-#define L2_RIGHT 1
-#define L2_UP 2
-#define L2_DOWN 3
+#define L2_RIGHT 3
+#define L2_UP 1
+#define L2_DOWN 2
 
 int opposite_dir(const int& dir) {
-	switch (dir) {
-	case L2_LEFT:	return L2_RIGHT;
-	case L2_RIGHT:	return L2_LEFT;
-	case L2_UP:		return L2_DOWN;
-	case L2_DOWN:	return L2_UP;
-	}
+	return 3 - dir;
 }
 
 template<class T>
@@ -28,11 +24,9 @@ public:
 			adj[i] = NULL;
 		data = NULL;
 	}
-
 	Link2<T>(const T& _data) : Link2<T>() {
 		data = new T(_data);
 	}
-
 	~Link2<T>() {
 		if (data != NULL) delete data;
 		for (int i = 0; i < 4; i++) {
@@ -57,7 +51,6 @@ public:
 		adj[dir] = ptr;
 		ptr->adj[opposite_dir(dir)] = this;
 	}
-
 	void insert(const int& dir, const T& data) {
 		if (adj[dir] == NULL)
 			connect(dir, new Link2<T>(data));
@@ -69,14 +62,13 @@ public:
 		}
 	}
 
-	int get_width() {
+	int get_width() const {
 		if (adj[L2_RIGHT] == NULL)
 			return 1;
 		else
 			return 1 + adj[L2_RIGHT]->get_width();
 	}
-
-	int get_depth() {
+	int get_depth() const {
 		if (adj[L2_DOWN] == NULL)
 			return 1;
 		else
@@ -101,6 +93,7 @@ public:
 			trace = trace->adj[L2_RIGHT];
 		}
 	}
+
 	void diamond_poll(int scale) {
 		float sum = 0.0f;
 		sum += *(adj[L2_LEFT ]->adj[L2_UP  ]->data);
@@ -121,7 +114,6 @@ public:
 			delete data;
 		data = new float(sum / count + (rand() % (256 - scale)) / 256.0f);
 	}
-
 };
 
 #endif
