@@ -18,7 +18,8 @@ const Color white(1.0f), gray(0.5f), black(0.0f);
 
 Color normalize(float foo) {
 	//0.0f <= foo <= 1.0f
-	return Color(foo);
+	return Color(foo, 0.0f, 0.0f);
+	//return Color(foo);
 }
 
 class Grid {
@@ -27,14 +28,11 @@ public:
 	int n, m;
 
 	Grid() {
-		n = 2;
-		m = 2;
-
-		root = new Link2<float>(1.0f);
-
-		root->insert(L2_RIGHT, 1.0f);
-		root->insert(L2_DOWN, 1.0f);
-		root->adj[L2_RIGHT]->insert(L2_DOWN, 1.0f);
+		n = m = 2;
+		root = new Link2<float>((float)(rand() % 256) / 256.0f);
+		root->insert(L2_RIGHT, (float)(rand() % 256) / 256.0f);
+		root->insert(L2_DOWN,  (float)(rand() % 256) / 256.0f);
+		root->adj[L2_RIGHT]->insert(L2_DOWN, (float)(rand() % 256) / 256.0f);
 		root->adj[L2_DOWN]->connect(L2_RIGHT, root->adj[L2_RIGHT]->adj[L2_DOWN]);
 	}
 
@@ -66,6 +64,35 @@ public:
 		}
 	}
 
+	void hor_square_poll() {
+		Link2<float> *trace[2] = { root->adj[L2_RIGHT], NULL };
+		while (trace[0] != NULL) {
+			trace[1] = trace[0];
+			while (trace[1] != NULL) {
+				trace[1]->square_poll();
+				if (trace[1]->adj[L2_DOWN] != NULL)
+					trace[1] = trace[1]->adj[L2_DOWN]->adj[L2_DOWN];
+				else
+					trace[1] = NULL;
+			}
+			trace[0] = trace[0]->adj[L2_RIGHT]->adj[L2_RIGHT];
+		}
+	}
+	void ver_square_poll() {
+		Link2<float> *trace[2] = { root->adj[L2_DOWN], NULL };
+		while (trace[0] != NULL) {
+			trace[1] = trace[0];
+			while (trace[1] != NULL) {
+				trace[1]->square_poll();
+				trace[1] = trace[1]->adj[L2_DOWN]->adj[L2_DOWN];
+			}
+			if (trace[0]->adj[L2_RIGHT] != NULL)
+				trace[0] = trace[0]->adj[L2_RIGHT]->adj[L2_RIGHT];
+			else
+				trace[0] = NULL;
+		}
+	}
+
 	void ds_insert() {
 		//root->insert_row(0.0f);
 		//root->insert_col(0.0f);
@@ -73,6 +100,8 @@ public:
 			insert_horizontal();
 			insert_vertical();
 			diamond_poll();
+			hor_square_poll();
+			ver_square_poll();
 			m = 2 * m - 1;
 			n = 2 * n - 1;
 		}
@@ -129,12 +158,19 @@ void reshape(int w, int h)
 
 void keyboard(unsigned char key, int x, int y)
 {
+	
+	int mod = glutGetModifiers();
 	switch (key) {
 	case 27:
 		exit(0);
 		break;
 	case ' ':
-		mygrid->ds_insert();
+		if (mod == GLUT_ACTIVE_SHIFT) {
+			delete mygrid;
+			mygrid = new Grid();
+		}
+		else
+			mygrid->ds_insert();
 		break;
 	default:
 		break;
@@ -152,6 +188,8 @@ void timer(int te)
 
 int main(int argc, char** argv)
 {
+	srand((unsigned)time(NULL));
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(800, 800);
