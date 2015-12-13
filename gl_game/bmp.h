@@ -5,6 +5,8 @@
 
 #define HEAD_SIZE 54
 
+
+
 GLuint loadBMP_custom(const char * imagepath) {
 	// Data read from the header of the BMP file
 	unsigned char header[HEAD_SIZE];	// Each BMP file begins by a 54-bytes header
