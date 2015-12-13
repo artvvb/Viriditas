@@ -97,5 +97,29 @@ void tex_test(GLuint image) {
 	theta += 1.0f;
 }
 
+void render(GLuint *font, char *str, Coord& chr_size, Coord& origin) {
+	Coord off(origin);
+	while (*str) {
+		if (*str == '\n') {
+			off['x'] = origin['x'];
+			off['y'] += chr_size['y'];
+		}
+		else {
+			glEnable(GL_TEXTURE_2D);
+			//glBindTexture(GL_TEXTURE_2D, font[*str]);
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glBindTexture(GL_TEXTURE_2D, *font);
+			
+			glBegin(GL_QUADS);
+			glTexCoord2d(0.0, 0.0); glVertex2d(off['x'], off['y']);
+			glTexCoord2d(1.0, 0.0); glVertex2d(off['x'] + chr_size['x'], off['y']);
+			glTexCoord2d(1.0, 1.0); glVertex2d(off['x'] + chr_size['x'], off['y'] + chr_size['y']);
+			glTexCoord2d(0.0, 1.0); glVertex2d(off['x'], off['y'] + chr_size['y']);
+			glEnd();
+
+			off['x'] += chr_size['x'];
+		}
+	}
+}
 
 #endif

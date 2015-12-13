@@ -44,6 +44,7 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.5, 0.5, 0.5, 1.0);
 
+	
 	//tex_test(image);
 	/**/
 	
@@ -54,6 +55,9 @@ void display(void)
 	render(*mygrid, mouse, image);
 	
 	if (last_mouse_time + 1000.0f < tick) {
+		char *str = "00\n00\n";
+		render(&image, str, Coord(new float[2]{0.1f, 0.1f}), mouse);
+		/*/
 		glBegin(GL_QUADS);
 		//glColor3f(0.0f, 0.0f, 0.0f);
 		glTexCoord2f(0.0f, 0.0f);		glVertex2f(mouse['x'],			mouse['y']			);
@@ -61,6 +65,7 @@ void display(void)
 		glTexCoord2f(1.0f, 1.0f);		glVertex2f(mouse['x'] + 0.1f,	mouse['y'] - 0.1f	);
 		glTexCoord2f(1.0f, 0.0f);		glVertex2f(mouse['x'] + 0.1f,	mouse['y']			);
 		glEnd();
+		/**/
 	}
 	/**/
 
