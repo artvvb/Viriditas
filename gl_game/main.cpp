@@ -16,7 +16,7 @@ const Color white(1.0f), gray(0.5f), black(0.0f);
 
 Grid *mygrid;
 
-int window_shape[2] = { 800, 800 };
+int window_shape[2] = { 800, 800 };//wisth, height
 Coord mouse = Coord(new float[2]{0.0f, 0.0f});
 const float fov = 90.0;
 float aspect = (GLfloat)(window_shape[0]) / (GLfloat)(window_shape[1]);
@@ -26,7 +26,7 @@ Coord get_position(int x, int y) {
 	//return position of the mouse in world coordinates
 
 	return Coord(new float[2]{
-		2.0f * (float)x / (float)window_shape[0] - 1.0f,
+		2.0f * (float)x / (float)window_shape[1] - 1.0f * aspect,//equivalent of * aspect / width
 		-1.0f * (2.0f * (float)y / (float)window_shape[1] - 1.0f)
 	});
 }

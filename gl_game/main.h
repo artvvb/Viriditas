@@ -2,9 +2,9 @@
 #define _MAIN_H_
 
 #include <Windows.h>
-#include <gl/GL.h>
-#include <gl/GLU.h>
-#include <glut.h>
+#include <GL/GL.h>
+#include <GL/GLU.h>
+#include <GL/glut.h>
 #include <math.h>
 #include <time.h>
 #include <vector>
