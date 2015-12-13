@@ -30,41 +30,44 @@ public:
 			point['x'] <= center['x'] + length / 2.0f &&
 			point['y'] >= center['y'] - length / 2.0f &&
 			point['y'] <= center['y'] + length / 2.0f
-			);
+		);
 	}
 };
 
-void render(Square& mysquare) {
-	for (int i = 0; i < 4; i++)
-		render(get_vector(mysquare.center, 45.0f + 90.0f * i, mysquare.length / sqrt(2)));
+void render(Square& mysquare, bool textured = false) {
+	float mag = mysquare.length / sqrt(2);
+	if (textured) glTexCoord2f(0.0f, 0.0f); render(get_vector(mysquare.center,  45.0f, mag));
+	if (textured) glTexCoord2f(0.0f, 1.0f); render(get_vector(mysquare.center, 135.0f, mag));
+	if (textured) glTexCoord2f(1.0f, 1.0f); render(get_vector(mysquare.center, 225.0f, mag));
+	if (textured) glTexCoord2f(1.0f, 0.0f); render(get_vector(mysquare.center, 315.0f, mag));
 }
 
-void render(Grid& mygrid, Coord& mouse) {
-	static const int corners[4][2] = {
-		{ 0, 0 },
-		{ 0, 1 },
-		{ 1, 1 },
-		{ 1, 0 }
-	};
-
-	glBegin(GL_QUADS);
+void render(Grid& mygrid, Coord& mouse, GLuint image) {
 	for (int i = 0; i < mygrid.m; i++) {
 		for (int j = 0; j < mygrid.m; j++) {
 			Color mycolor(*(mygrid.root->find(i, j)->data), 0.0f, 0.0f);
 			Square mysquare;
 			mysquare.center = Coord(new float[2]{//-1.0 -> 1.0
 				2.0f * (((float)i + 0.5f) / (float)mygrid.m) - 1.0f,
-				2.0f * (((float)j + 0.5f) / (float)mygrid.m) - 1.0f,
+				-2.0f * (((float)j + 0.5f) / (float)mygrid.m) + 1.0f,
 			});
 			mysquare.length = 2.0f / (float)mygrid.m;
-			if (mysquare.within(mouse))
-				render(Color(0.0f, 0.0f, 1.0f));
-			else
-				render(mycolor);
-			render(mysquare);
+
+			bool tex = mysquare.within(mouse);
+
+			if (tex) {
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, image);
+			}
+			glBegin(GL_QUADS);
+			render(mycolor);
+			render(mysquare, tex);
+			glEnd();
+			if (tex)
+				glDisable(GL_TEXTURE_2D);
+
 		}
 	}
-	glEnd();
 
 	glPointSize(4.0f);
 	glBegin(GL_POINTS);
@@ -72,5 +75,27 @@ void render(Grid& mygrid, Coord& mouse) {
 	glVertex2f(mouse['x'], mouse['y']);
 	glEnd();
 }
+
+void tex_test(GLuint image) {
+	static float theta = 0.0f;
+	glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// setup texture mapping
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, image);
+
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0, 0.0); glVertex2d(-0.5, -0.5);
+	glTexCoord2d(1.0, 0.0); glVertex2d(+0.5, -0.5);
+	glTexCoord2d(1.0, 1.0); glVertex2d(+0.5, +0.5);
+	glTexCoord2d(0.0, 1.0); glVertex2d(-0.5, +0.5);
+	glEnd();
+	
+	glutSwapBuffers();
+
+	theta += 1.0f;
+}
+
 
 #endif

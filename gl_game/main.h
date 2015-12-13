@@ -1,6 +1,9 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
+#include <Windows.h>
+#include <gl/GL.h>
+#include <gl/GLU.h>
 #include <glut.h>
 #include <math.h>
 #include <time.h>

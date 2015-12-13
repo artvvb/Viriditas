@@ -41,6 +41,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\mylib\freeglut\include\GL;C:\mylib\glew-1.13.0\include\GL;</IncludePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\mylib\freeglut\include\GL;C:\mylib\glew-1.13.0\include\GL;</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -64,19 +67,30 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;C:\mylib\freeglut\lib\freeglut.lib;C:\mylib\glew-1.13.0\lib\Release\x64\glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bmp.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="coord.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="link2.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="render.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="tex.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Debug\texture.raw" />
+    <None Include="vir-gl.f.glsl" />
+    <None Include="vir-gl.v.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Debug\sqr.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

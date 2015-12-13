@@ -3,8 +3,10 @@
 #include "color.h"
 #include "grid.h"
 #include "render.h"
+#include "shader.h"
+#include "bmp.h"
 
-float tick = 0.0;
+float tick = 0.0f, last_mouse_time = 0.0f;
 
 #define MYN 3
 
@@ -15,7 +17,7 @@ const Color white(1.0f), gray(0.5f), black(0.0f);
 Grid *mygrid;
 
 int window_shape[2] = { 800, 800 };
-float mouse_pos[2] = { 0.0, 0.0 };
+Coord mouse = Coord(new float[2]{0.0f, 0.0f});
 const float fov = 90.0;
 float aspect = (GLfloat)(window_shape[0]) / (GLfloat)(window_shape[1]);
 const float depth = -1.0f;
@@ -29,12 +31,27 @@ Coord get_position(int x, int y) {
 	});
 }
 
+GLuint image;
+
 void display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.5, 0.5, 0.5, 1.0);
 
-	render(*mygrid, get_position(mouse_pos[0], mouse_pos[1]));
+	//tex_test(image);
+	/**/
+	render(*mygrid, mouse, image);
+	
+	if (last_mouse_time + 1000.0f < tick) {
+		glBegin(GL_QUADS);
+		//glColor3f(0.0f, 0.0f, 0.0f);
+		glTexCoord2f(0.0f, 0.0f);		glVertex2f(mouse['x'],			mouse['y']			);
+		glTexCoord2f(0.0f, 1.0f);		glVertex2f(mouse['x'],			mouse['y'] - 0.1f	);
+		glTexCoord2f(1.0f, 1.0f);		glVertex2f(mouse['x'] + 0.1f,	mouse['y'] - 0.1f	);
+		glTexCoord2f(1.0f, 0.0f);		glVertex2f(mouse['x'] + 0.1f,	mouse['y']			);
+		glEnd();
+	}
+	/**/
 
 	glutSwapBuffers();
 }
@@ -78,20 +95,20 @@ void keyboard(unsigned char key, int x, int y)
 
 void timer(int te)
 {
-	tick += 0.5;
-	while (tick >= 360.0)
-		tick -= 360.0;
-	glutPostRedisplay(); // Redraw screen with new object data.
+	tick += 10.0;//ms
+	glutPostRedisplay();//redraw
 	glutTimerFunc(10, timer, 1);//re-call in another 10ms
+	return;
 }
 
 void passive_mouse(int x, int y) {
-	mouse_pos[0] = x;
-	mouse_pos[1] = y;
+	mouse = get_position(x, y);
+	last_mouse_time = tick;
 }
 
 int main(int argc, char** argv)
 {
+	last_mouse_time = (int)time(NULL);
 	srand((unsigned)time(NULL));
 
 	glutInit(&argc, argv);
@@ -100,6 +117,9 @@ int main(int argc, char** argv)
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow(argv[0]);
 
+	cout << "version = " << glGetString(GL_VERSION) << endl;
+
+	image = loadBMP_custom("sqr.bmp");
 	mygrid = new Grid(MYN);
 
 	glutDisplayFunc(display);
