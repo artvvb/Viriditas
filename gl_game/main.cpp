@@ -26,7 +26,7 @@ Coord get_position(int x, int y) {
 	//return position of the mouse in world coordinates
 
 	return Coord(new float[2]{
-		2.0f * (float)x / (float)window_shape[1] - 1.0f * aspect,//equivalent of * aspect / width
+		aspect * (2.0f * (float)x / (float)window_shape[0] - 1.0f),//equivalent of * aspect / width
 		-1.0f * (2.0f * (float)y / (float)window_shape[1] - 1.0f)
 	});
 }
@@ -35,11 +35,21 @@ GLuint image;
 
 void display(void)
 {
+	static unsigned int last_time = (unsigned)clock();
+	unsigned int current_time = (unsigned)clock();
+	float fps = (float)CLOCKS_PER_SEC / (float)(current_time - last_time);
+	last_time = current_time;
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.5, 0.5, 0.5, 1.0);
 
 	//tex_test(image);
 	/**/
+	
+	char fps_str[7];
+	sprintf_s(fps_str, "%.2f", fps);
+	cout << fps << endl;
+
 	render(*mygrid, mouse, image);
 	
 	if (last_mouse_time + 1000.0f < tick) {
