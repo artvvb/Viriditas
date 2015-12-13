@@ -6,7 +6,7 @@
 
 #define HEAD_SIZE 54
 
-GLuint loadBMP_custom(const char * imagepath) {
+GLuint make_tex_from_bmp(const char * imagepath) {
 	// Data read from the header of the BMP file
 	unsigned char header[HEAD_SIZE];	// Each BMP file begins by a 54-bytes header
 	unsigned int dataPos;		// Position in the file where the actual data begins

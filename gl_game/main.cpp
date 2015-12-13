@@ -6,6 +6,7 @@
 #include "shader.h"
 #include "bmp.h"
 #include "font.h"
+#include "glinit.h"
 
 float tick = 0.0f, last_mouse_time = 0.0f;
 
@@ -17,22 +18,23 @@ const Color white(1.0f), gray(0.5f), black(0.0f);
 
 Grid *mygrid;
 
-int window_shape[2] = { 800, 800 };//wisth, height
+int window[2] = { 800, 800 };//wisth, height
 Coord mouse = Coord(new float[2]{0.0f, 0.0f});
 const float fov = 90.0;
-float aspect = (GLfloat)(window_shape[0]) / (GLfloat)(window_shape[1]);
+float aspect = (GLfloat)(window[0]) / (GLfloat)(window[1]);
 const float depth = -1.0f;
 
 Coord get_position(int x, int y) {
 	//return position of the mouse in world coordinates
 
 	return Coord(new float[2]{
-		aspect * (2.0f * (float)x / (float)window_shape[0] - 1.0f),//equivalent of * aspect / width
-		-1.0f * (2.0f * (float)y / (float)window_shape[1] - 1.0f)
+		aspect * (2.0f * (float)x / (float)window[0] - 1.0f),//equivalent of * aspect / width
+		-1.0f * (2.0f * (float)y / (float)window[1] - 1.0f)
 	});
 }
 
 GLuint image;
+GLuint font[256];
 
 void display(void)
 {
@@ -44,27 +46,15 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.5, 0.5, 0.5, 1.0);
 
-	
-
-	
 	char fps_str[7];
 	sprintf_s(fps_str, "%.2f", fps);
-	cout << fps << endl;
+	//cout << fps << endl;
 
 	render(*mygrid, mouse, image);
 	
 	if (last_mouse_time + 1000.0f < tick) {
 		char *str = "00\n00\n";
-		render(image, str, Coord(0.1f, 0.1f), mouse);
-		/*/
-		glBegin(GL_QUADS);
-		//glColor3f(0.0f, 0.0f, 0.0f);
-		glTexCoord2f(0.0f, 0.0f);		glVertex2f(mouse['x'],			mouse['y']			);
-		glTexCoord2f(0.0f, 1.0f);		glVertex2f(mouse['x'],			mouse['y'] - 0.1f	);
-		glTexCoord2f(1.0f, 1.0f);		glVertex2f(mouse['x'] + 0.1f,	mouse['y'] - 0.1f	);
-		glTexCoord2f(1.0f, 0.0f);		glVertex2f(mouse['x'] + 0.1f,	mouse['y']			);
-		glEnd();
-		/**/
+		render(font['0'], str, Coord(0.1f, 0.1f), mouse);
 	}
 
 	glutSwapBuffers();
@@ -72,9 +62,9 @@ void display(void)
 
 void reshape(int w, int h)
 {
-	window_shape[0] = w;
-	window_shape[1] = h;
-	aspect = (GLfloat)(window_shape[0]) / (GLfloat)(window_shape[1]);
+	window[0] = w;
+	window[1] = h;
+	aspect = (GLfloat)(window[0]) / (GLfloat)(window[1]);
 
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
 	glMatrixMode(GL_PROJECTION);
@@ -124,16 +114,14 @@ int main(int argc, char** argv)
 {
 	last_mouse_time = (int)time(NULL);
 	srand((unsigned)time(NULL));
-
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(window_shape[0], window_shape[1]);
-	glutInitWindowPosition(0, 0);
-	glutCreateWindow(argv[0]);
+	
+	gl_init(argc, argv, window[0], window[1], 0, 0);
 
 	cout << "version = " << glGetString(GL_VERSION) << endl;
 
-	image = loadBMP_custom("sqr.bmp");
+	image = make_tex_from_bmp("sqr.bmp");
+	make_tex_from_ttf(font, "Consolas.ttf");
+
 	mygrid = new Grid(MYN);
 
 	glutDisplayFunc(display);

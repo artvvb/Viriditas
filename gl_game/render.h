@@ -116,7 +116,6 @@ void render(GLuint tex, Coord& size, Coord& origin) {
 
 void render(GLuint font, char *str, Coord& size, Coord& origin) {
 	Coord off(origin);
-	/**/
 	while (*str) {
 		if (*str == '\n') {
 			off['x'] = origin['x'];
@@ -128,7 +127,6 @@ void render(GLuint font, char *str, Coord& size, Coord& origin) {
 		}
 		str++;
 	}
-	/**/
 }
 
 #endif
