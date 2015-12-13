@@ -2,10 +2,9 @@
 #define _BMP_H_
 
 #include "main.h"
+#include "tex.h"
 
 #define HEAD_SIZE 54
-
-
 
 GLuint loadBMP_custom(const char * imagepath) {
 	// Data read from the header of the BMP file
@@ -53,17 +52,10 @@ GLuint loadBMP_custom(const char * imagepath) {
 	//Everything is in memory now, the file can be closed
 	fclose(file);
 
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+	Tex mytex(data, width, height);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
 	delete data;
 
-	return texture;
+	return mytex.texture;
 }
 #endif
