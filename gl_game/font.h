@@ -2,6 +2,6 @@
 #define _FONT_H_
 
 #include <ft2build.h>
-#include <freetype2\freetype\config\ftheader.h>
+#include FT_FREETYPE_H
 
 #endif

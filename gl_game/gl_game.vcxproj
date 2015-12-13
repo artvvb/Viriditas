@@ -39,7 +39,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\mylib\freeglut\include;C:\Program Files (x86)\GnuWin32\include;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\mylib\freeglut\include;C:\Program Files (x86)\GnuWin32\include;C:\Program Files (x86)\GnuWin32\include\freetype2;</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\mylib\freeglut\include\GL;C:\mylib\glew-1.13.0\include\GL;</IncludePath>
@@ -92,6 +92,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Debug\sqr.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\Consolas.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
