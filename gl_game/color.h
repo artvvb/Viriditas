@@ -29,4 +29,6 @@ public:
 	
 };
 
+const Color white(1.0f), gray(0.5f), black(0.0f);
+
 #endif

@@ -14,8 +14,6 @@ float tick = 0.0f, last_mouse_time = 0.0f;
 
 Coord myorigin(new float[3]{0.0, 0.0, 0.0});
 
-const Color white(1.0f), gray(0.5f), black(0.0f);
-
 Grid *mygrid;
 
 int window[2] = { 800, 800 };//wisth, height

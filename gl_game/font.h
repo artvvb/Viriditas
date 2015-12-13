@@ -67,7 +67,8 @@ GLuint font_init() {
 		fprintf(stderr, "Could not load character 'X'\n");
 		return 1;
 	}
-
+	//Tex mytex(buf, width, height); creates a mipmap texture from a character buffer of RGBRGB... values
+	/**/
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -77,7 +78,7 @@ GLuint font_init() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+	/**/
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	GLuint vbo;
@@ -137,11 +138,11 @@ void render_text(const char *text, float x, float y, float sx, float sy) {
 	}
 }
 
-void display() {
+void display_text_test() {//display() already exists in main, to run this code, add a call to this function to that display function
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	GLfloat black[4] = { 0, 0, 0, 1 };
+	GLfloat black[4] = { 0, 0, 0, 1 };//rgba
 	glUniform4fv(uniform_color, 1, black);
 
 	float sx = 2.0 / glutGet(GLUT_WINDOW_WIDTH);

@@ -101,6 +101,7 @@ void tex_test(GLuint image) {
 	theta += 1.0f;
 }
 
+//renders a rectangle of size size with upper left corner at origin
 void render(GLuint tex, Coord& size, Coord& origin) {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex);
