@@ -5,6 +5,7 @@
 #include "render.h"
 #include "shader.h"
 #include "bmp.h"
+#include "font.h"
 
 float tick = 0.0f, last_mouse_time = 0.0f;
 
