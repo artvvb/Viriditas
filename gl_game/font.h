@@ -111,15 +111,26 @@ void render_text(const char *text, float x, float y, float sx, float sy) {
 		float w = g->bitmap.width * sx;
 		float h = g->bitmap.rows * sy;
 
-		GLfloat box[4][4] = {
-			{ x2,     -y2    , 0, 0 },
-			{ x2 + w, -y2    , 1, 0 },
-			{ x2,     -y2 - h, 0, 1 },
-			{ x2 + w, -y2 - h, 1, 1 },
+		GLfloat box[4][4] = {//X, Y, TexX, TexY?
+			{ x2,     -y2    , 0.0f, 0.0f },
+			{ x2 + w, -y2    , 1.0f, 0.0f },
+			{ x2,     -y2 - h, 0.0f, 1.0f },
+			{ x2 + w, -y2 - h, 1.0f, 1.0f },
 		};
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof box, box, GL_DYNAMIC_DRAW);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		{//do nothing brackets for clarity
+			//pure gl version
+			glBegin(GL_QUADS);
+			for (int i = 0; i < 4; i++) {
+				glTexCoord2f(box[i][2], box[i][3]);
+				glVertex2f(box[i][0], box[i][1]);
+			}
+			glEnd();
+
+			//shader call version
+			//glBufferData(GL_ARRAY_BUFFER, sizeof box, box, GL_DYNAMIC_DRAW);
+			//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		}
 
 		x += (g->advance.x >> 6) * sx;
 		y += (g->advance.y >> 6) * sy;
