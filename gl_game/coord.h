@@ -6,8 +6,18 @@ class Coord {
 protected:
 	float x, y;
 public:
-	Coord() {}
-	Coord(float arr[]) : x(arr[0]), y(arr[1]) {}
+	Coord() {
+	
+	}
+	Coord(float arr[]) : x(arr[0]), y(arr[1]) {
+	
+	}
+	Coord(const float& _x, const float& _y) : x(_x), y(_y) {
+
+	}
+	Coord(Coord& other) : x(other['x']), y(other['y']) {
+
+	}
 
 	float& operator[] (char index) {
 		switch (index) {

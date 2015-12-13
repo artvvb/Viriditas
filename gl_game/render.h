@@ -24,6 +24,10 @@ public:
 	float length;
 	Coord center;
 
+	Square() {
+
+	}
+
 	bool within(Coord& point) {
 		return (
 			point['x'] >= center['x'] - length / 2.0f &&
@@ -97,5 +101,32 @@ void tex_test(GLuint image) {
 	theta += 1.0f;
 }
 
+void render(GLuint tex, Coord& size, Coord& origin) {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	glBegin(GL_QUADS);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glTexCoord2d(0.0, 0.0); glVertex2f(origin['x'],				origin['y']				);
+	glTexCoord2d(1.0, 0.0); glVertex2f(origin['x'] + size['x'], origin['y']				);
+	glTexCoord2d(1.0, 1.0); glVertex2f(origin['x'] + size['x'], origin['y'] - size['y']	);
+	glTexCoord2d(0.0, 1.0); glVertex2f(origin['x'],				origin['y'] - size['y']	);
+	glEnd();
+}
+
+void render(GLuint font, char *str, Coord& size, Coord& origin) {
+	Coord off(origin);
+	while (*str) {
+		if (*str == '\n') {
+			off['x'] = origin['x'];
+			off['y'] -= size['y'];
+		}
+		else {
+			render(font, size, off);
+			off['x'] += size['x'];
+		}
+		str++;
+	}
+}
 
 #endif

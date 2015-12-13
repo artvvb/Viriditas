@@ -78,6 +78,7 @@
     <ClInclude Include="color.h" />
     <ClInclude Include="coord.h" />
     <ClInclude Include="font.h" />
+    <ClInclude Include="glinit.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="link2.h" />
     <ClInclude Include="main.h" />
