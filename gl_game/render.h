@@ -24,6 +24,10 @@ public:
 	float length;
 	Coord center;
 
+	Square() {
+
+	}
+
 	bool within(Coord& point) {
 		return (
 			point['x'] >= center['x'] - length / 2.0f &&
@@ -97,29 +101,34 @@ void tex_test(GLuint image) {
 	theta += 1.0f;
 }
 
-void render(GLuint *font, char *str, Coord& chr_size, Coord& origin) {
+void render(GLuint tex, Coord& size, Coord& origin) {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	glBegin(GL_QUADS);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glTexCoord2d(0.0, 0.0); glVertex2f(origin['x'],				origin['y']				);
+	glTexCoord2d(1.0, 0.0); glVertex2f(origin['x'] + size['x'], origin['y']				);
+	glTexCoord2d(1.0, 1.0); glVertex2f(origin['x'] + size['x'], origin['y'] - size['y']	);
+	glTexCoord2d(0.0, 1.0); glVertex2f(origin['x'],				origin['y'] - size['y']	);
+	glEnd();
+}
+
+void render(GLuint font, char *str, Coord& size, Coord& origin) {
 	Coord off(origin);
+	/**/
 	while (*str) {
 		if (*str == '\n') {
 			off['x'] = origin['x'];
-			off['y'] += chr_size['y'];
+			off['y'] -= size['y'];
 		}
 		else {
-			glEnable(GL_TEXTURE_2D);
-			//glBindTexture(GL_TEXTURE_2D, font[*str]);
-			glColor3f(1.0f, 1.0f, 1.0f);
-			glBindTexture(GL_TEXTURE_2D, *font);
-			
-			glBegin(GL_QUADS);
-			glTexCoord2d(0.0, 0.0); glVertex2d(off['x'], off['y']);
-			glTexCoord2d(1.0, 0.0); glVertex2d(off['x'] + chr_size['x'], off['y']);
-			glTexCoord2d(1.0, 1.0); glVertex2d(off['x'] + chr_size['x'], off['y'] + chr_size['y']);
-			glTexCoord2d(0.0, 1.0); glVertex2d(off['x'], off['y'] + chr_size['y']);
-			glEnd();
-
-			off['x'] += chr_size['x'];
+			render(font, size, off);
+			off['x'] += size['x'];
 		}
+		str++;
 	}
+	/**/
 }
 
 #endif

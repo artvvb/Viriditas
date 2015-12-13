@@ -45,8 +45,7 @@ void display(void)
 	glClearColor(0.5, 0.5, 0.5, 1.0);
 
 	
-	//tex_test(image);
-	/**/
+
 	
 	char fps_str[7];
 	sprintf_s(fps_str, "%.2f", fps);
@@ -56,7 +55,7 @@ void display(void)
 	
 	if (last_mouse_time + 1000.0f < tick) {
 		char *str = "00\n00\n";
-		render(&image, str, Coord(new float[2]{0.1f, 0.1f}), mouse);
+		render(image, str, Coord(0.1f, 0.1f), mouse);
 		/*/
 		glBegin(GL_QUADS);
 		//glColor3f(0.0f, 0.0f, 0.0f);
@@ -67,7 +66,6 @@ void display(void)
 		glEnd();
 		/**/
 	}
-	/**/
 
 	glutSwapBuffers();
 }
