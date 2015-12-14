@@ -10,9 +10,6 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="MkZip.bat" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B4277882-6EA0-416C-9E8C-FA84AE34F408}</ProjectGuid>
     <RootNamespace>ZipInstall</RootNamespace>
@@ -68,8 +65,8 @@
     <PreBuildEvent>
       <Command>echo Running ZipInstall Prebuild event
 
-cd $(SolutionDir)\Release
-zip $(SolutionName).zip *.dll *.exe</Command>
+cd "$(SolutionDir)\Release"
+zip $(SolutionName).zip *.*</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>Create installer zip</Message>
