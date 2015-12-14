@@ -6,30 +6,29 @@
 
 #define HEAD_SIZE 54
 
-GLuint make_tex_from_bmp(const char * imagepath) {
+Tex *make_tex_from_bmp(const char * imagepath) {
 	// Data read from the header of the BMP file
 	unsigned char header[HEAD_SIZE];	// Each BMP file begins by a 54-bytes header
 	unsigned int dataPos;		// Position in the file where the actual data begins
 	unsigned int width, height;
 	unsigned char *data;		// Actual RGB data
 
-	GLuint texture;
 	FILE * file;
 
 	fopen_s(&file, imagepath, "rb");	// Open the file
 
 	if (!file) { 
 		cout << "Image could not be opened" << endl; 
-		return 0;
+		return NULL;
 	}
 
 	if (fread(header, 1, HEAD_SIZE, file) != HEAD_SIZE){ // If not 54 bytes read : problem
 		cout << "Not a correct BMP file" << endl;
-		return 0;
+		return NULL;
 	}
 	if (header[0] != 'B' || header[1] != 'M'){
 		cout << "Not a correct BMP file" << endl;
-		return 0;
+		return NULL;
 	}
 
 	// Read ints from the byte array
@@ -55,10 +54,10 @@ GLuint make_tex_from_bmp(const char * imagepath) {
 	//Everything is in memory now, the file can be closed
 	fclose(file);
 
-	Tex mytex(data, width, height, 3);
+	Tex *tex = new Tex(data, width, height, 3);
 
 	delete data;
 
-	return mytex.texture;
+	return tex;
 }
 #endif

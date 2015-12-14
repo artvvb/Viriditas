@@ -77,6 +77,7 @@
     <ClInclude Include="bmp.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="coord.h" />
+    <ClInclude Include="fastmath.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="glinit.h" />
     <ClInclude Include="grid.h" />

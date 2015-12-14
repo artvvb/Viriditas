@@ -3,6 +3,8 @@
 
 #include "main.h"
 #include "tex.h"
+#include "fastmath.h"
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -65,32 +67,38 @@ public:
 	FT_Library  library;
 	FT_Face     face;
 	GLuint textures[10];//starting with numeric only
-	int width, height;//character size
 	bool valid;
+	int width, height;
 
-	Font(char *filename) {
+	int freetype_init(char *filename) {
 		int error;
 
-		valid = false;
-		
-		if (FT_Init_FreeType(&library)) {
+		error = FT_Init_FreeType(&library);
+		if (error) {
 			cout << "Freetype library initialization failed" << endl;
-			return;
+			return error;
 		}
+
 		error = FT_New_Face(library, filename, 0, &face);
 		if (error == FT_Err_Unknown_File_Format) {
 			cout << "Font file format unsupported" << endl;
-			return;
+			return error;
 		}
 		else if (error) {
 			cout << "Failed to open font file" << endl;
-			return;
+			return error;
 		}
-		FT_Set_Pixel_Sizes(
-			face,
-			12,
-			0	//same as above
-		);
+		
+		return 0;
+	}
+
+	Font(char *filename) {
+		valid = false;
+
+		if (freetype_init(filename))
+			return;
+		
+		FT_Set_Pixel_Sizes(face, 64, 0);
 
 		glGenTextures(10, textures);
 
@@ -106,6 +114,38 @@ public:
 			cout << c << ": width = " << bitmap->width << endl;
 			cout << c << ": rows  = " << bitmap->rows << endl;
 
+			width = next_p2(bitmap->width, 8);
+			height = next_p2(bitmap->rows,  8);
+			
+			//PAD THE BUFFER TO FIT 2^N x 2^N
+			unsigned char *buffer = new unsigned char[3 * width * height];//default white
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++){
+					if (y < bitmap->rows && x < bitmap->width) {
+						buffer[3 * (y * width + x) + 0] = 
+						buffer[3 * (y * width + x) + 1] = 
+						buffer[3 * (y * width + x) + 2] = bitmap->buffer[y * bitmap->width + x];
+					}
+					else {
+						buffer[3 * (y * width + x) + 0] =
+						buffer[3 * (y * width + x) + 1] =
+						buffer[3 * (y * width + x) + 2] = 0x00;
+					}
+					/*/
+					if (buffer[4 * (y * width + x) + 0] == 0x00) {
+						buffer[4 * (y * width + x) + 3] = 0x7f;
+					}
+					else {
+						buffer[4 * (y * width + x) + 3] = 0xff;
+					}
+					/**/
+				}
+			}
+
+			cout << "after padding:" << endl;
+			cout << c << ": width  = " << width  << endl;
+			cout << c << ": height = " << height << endl;
+
 			glBindTexture(GL_TEXTURE_2D, textures[i]);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
@@ -115,8 +155,8 @@ public:
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 			//pad buffer to size 2^n?
-
-			error =  gluBuild2DMipmaps(GL_TEXTURE_2D, 1, (int)bitmap->width, (int)bitmap->rows, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char*)bitmap->buffer);
+			
+			int error = gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 			cout << gluErrorString(error) << endl;
 			cout << textures[i] << endl;
 		}

@@ -146,7 +146,7 @@ void render(GLuint font, char *str, Coord& size, Coord& origin) {
 	}
 }
 
-void render(Font font, char *str, Coord& size, Coord& origin) {
+void render(Font& font, char *str, Coord& size, Coord& origin) {
 	Coord off(origin);
 	while (*str) {
 		if (*str == '\n') {

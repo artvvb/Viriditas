@@ -3,7 +3,6 @@
 #include "color.h"
 #include "grid.h"
 #include "render.h"
-#include "shader.h"
 #include "bmp.h"
 #include "font.h"
 #include "glinit.h"
@@ -31,7 +30,7 @@ Coord get_position(int x, int y) {
 	});
 }
 
-GLuint image;
+Tex *image;
 Font *font;
 
 void display(void)
@@ -48,7 +47,7 @@ void display(void)
 	sprintf_s(fps_str, "%.2f", fps);
 	//cout << fps << endl;
 
-	render(*mygrid, mouse, image);
+	render(*mygrid, mouse, image->texture);
 
 	/**/
 	if (last_mouse_time + 1000.0f < tick) {
@@ -122,8 +121,11 @@ int main(int argc, char** argv)
 	cout << "version = " << glGetString(GL_VERSION) << endl;
 
 	image = make_tex_from_bmp("sqr.bmp");
+	
 	font = new Font("Consolas.ttf");
 	if (font->valid == false) cout << "Font initialized incorrectly" << endl;
+
+
 	//font_init("Consolas.ttf");
 	//make_tex_from_ttf(font, "Consolas.ttf");
 
@@ -137,6 +139,7 @@ int main(int argc, char** argv)
 	
 	glutMainLoop();
 	delete mygrid;
+	delete font;
 
 	return 0;
 }
