@@ -9,6 +9,9 @@
 //http://nehe.gamedev.net/tutorial/freetype_fonts_in_opengl/24001/
 //http://www.freetype.org/freetype2/docs/tutorial/step1.html
 
+//THIS
+//https://axfive.wordpress.com/2012/01/17/freetype-texture-fonts-in-opengl/
+
 void make_tex_from_ttf(GLuint font[256], char *filename) {
 	FT_Library  library;
 	FT_Face     face;
@@ -85,8 +88,8 @@ public:
 		}
 		FT_Set_Pixel_Sizes(
 			face,
-			128,
-			128
+			12,
+			0	//same as above
 		);
 
 		glGenTextures(10, textures);
@@ -110,10 +113,18 @@ public:
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			gluBuild2DMipmaps(GL_TEXTURE_2D, 1, (int)bitmap->width, (int)bitmap->rows, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char*)bitmap->buffer);
+
+			//pad buffer to size 2^n?
+
+			error =  gluBuild2DMipmaps(GL_TEXTURE_2D, 1, (int)bitmap->width, (int)bitmap->rows, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char*)bitmap->buffer);
+			cout << gluErrorString(error) << endl;
 			cout << textures[i] << endl;
 		}
 		valid = true;
+	}
+
+	~Font() {
+		glDeleteTextures(10, textures);
 	}
 
 	GLuint& operator[] (char c) {
@@ -121,18 +132,20 @@ public:
 	}
 };
 
+
 /*/
 FT_Library ft;
 FT_Face face;
 GLuint tex;
-
-GLuint font_init() {
+/**/
+/*/
+GLuint font_init(char *filename) {
 	if (FT_Init_FreeType(&ft)) {
 		fprintf(stderr, "Could not init freetype library\n");
 		return 1;
 	}
 
-	if (FT_New_Face(ft, "Consolas.ttf", 0, &face)) {
+	if (FT_New_Face(ft, filename, 0, &face)) {
 		fprintf(stderr, "Could not open font\n");
 		return 1;
 	}
@@ -144,7 +157,8 @@ GLuint font_init() {
 		return 1;
 	}
 	//Tex mytex(buf, width, height); creates a mipmap(?) texture from a character buffer of RGBRGB... values
-//
+
+	//this implementation might require GLEW
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -157,79 +171,14 @@ GLuint font_init() {
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 //
 
-	GLuint vbo;
+	GLuint vbo;//vertex buffer object is a reference to an input stream to a shader, iirc
 	glGenBuffers(1, &vbo);
 	glEnableVertexAttribArray(attribute_coord);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(attribute_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);
 }
+/**//**/
 
-void render_text(const char *text, float x, float y, float sx, float sy) {
-	const char *p;
-
-	for (p = text; *p; p++) {
-		if (FT_Load_Char(face, *p, FT_LOAD_RENDER))
-			continue;
-
-		glTexImage2D(
-			GL_TEXTURE_2D,
-			0,
-			GL_RED,
-			g->bitmap.width,
-			g->bitmap.rows,
-			0,
-			GL_RED,
-			GL_UNSIGNED_BYTE,
-			g->bitmap.buffer
-			);
-
-		float x2 = x + g->bitmap_left * sx;
-		float y2 = -y - g->bitmap_top * sy;
-		float w = g->bitmap.width * sx;
-		float h = g->bitmap.rows * sy;
-
-		GLfloat box[4][4] = {//X, Y, TexX, TexY?
-			{ x2,     -y2    , 0.0f, 0.0f },
-			{ x2 + w, -y2    , 1.0f, 0.0f },
-			{ x2,     -y2 - h, 0.0f, 1.0f },
-			{ x2 + w, -y2 - h, 1.0f, 1.0f },
-		};
-
-		{//do nothing brackets for clarity
-			//pure gl version
-			glBegin(GL_QUADS);
-			for (int i = 0; i < 4; i++) {
-				glTexCoord2f(box[i][2], box[i][3]);
-				glVertex2f(box[i][0], box[i][1]);
-			}
-			glEnd();
-
-			//shader call version
-			//glBufferData(GL_ARRAY_BUFFER, sizeof box, box, GL_DYNAMIC_DRAW);
-			//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		}
-
-		x += (g->advance.x >> 6) * sx;
-		y += (g->advance.y >> 6) * sy;
-	}
-}
-
-void display_text_test() {//display() already exists in main, to run this code, add a call to this function to that display function
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	GLfloat black[4] = { 0, 0, 0, 1 };//rgba
-	glUniform4fv(uniform_color, 1, black);
-
-	float sx = 2.0 / glutGet(GLUT_WINDOW_WIDTH);
-	float sy = 2.0 / glutGet(GLUT_WINDOW_HEIGHT);
-
-	render_text("The Quick Brown Fox Jumps Over The Lazy Dog",
-		-1 + 8 * sx, 1 - 50 * sy, sx, sy);
-	render_text("The Misaligned Fox Jumps Over The Lazy Dog",
-		-1 + 8.5 * sx, 1 - 100.5 * sy, sx, sy);
-
-	glutSwapBuffers();
-}
+//moved text rendering functions to render.h
 /**/
 #endif

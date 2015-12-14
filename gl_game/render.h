@@ -162,4 +162,74 @@ void render(Font font, char *str, Coord& size, Coord& origin) {
 	}
 }
 
+/*/
+
+void render_text(const char *text, float x, float y, float sx, float sy) {
+	const char *p;
+
+	for (p = text; *p; p++) {
+		if (FT_Load_Char(face, *p, FT_LOAD_RENDER))
+			continue;
+
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_RED,
+			face->glyph->bitmap.width,
+			face->glyph->bitmap.rows,
+			0,
+			GL_RED,
+			GL_UNSIGNED_BYTE,
+			face->glyph->bitmap.buffer
+			);
+
+		float x2 = x + face->glyph->bitmap_left * sx;
+		float y2 = -y - face->glyph->bitmap_top * sy;
+		float w = face->glyph->bitmap.width * sx;
+		float h = face->glyph->bitmap.rows * sy;
+
+		GLfloat box[4][4] = {//X, Y, TexX, TexY?
+			{ x2, -y2, 0.0f, 0.0f },
+			{ x2 + w, -y2, 1.0f, 0.0f },
+			{ x2, -y2 - h, 0.0f, 1.0f },
+			{ x2 + w, -y2 - h, 1.0f, 1.0f },
+		};
+
+		{//do nothing brackets for clarity
+			//pure gl version
+			glBegin(GL_QUADS);
+			for (int i = 0; i < 4; i++) {
+				glTexCoord2f(box[i][2], box[i][3]);
+				glVertex2f(box[i][0], box[i][1]);
+			}
+			glEnd();
+
+			//shader call version
+			//glBufferData(GL_ARRAY_BUFFER, sizeof box, box, GL_DYNAMIC_DRAW);
+			//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		}
+
+		x += (face->glyph->advance.x >> 6) * sx;
+		y += (face->glyph->advance.y >> 6) * sy;
+	}
+}
+
+void display_text_test() {//display() already exists in main, to run this code, add a call to this function to that display function
+	glClearColor(1, 1, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	//GLfloat black[4] = { 0, 0, 0, 1 };//rgba
+	//glUniform4fv(uniform_color, 1, black);
+
+	float sx = 2.0 / glutGet(GLUT_WINDOW_WIDTH);
+	float sy = 2.0 / glutGet(GLUT_WINDOW_HEIGHT);
+
+	render(black);
+	render_text("The Quick Brown Fox Jumps Over The Lazy Dog", -1 + 8 * sx, 1 - 50 * sy, sx, sy);
+	render_text("The Misaligned Fox Jumps Over The Lazy Dog", -1 + 8.5 * sx, 1 - 100.5 * sy, sx, sy);
+
+	glutSwapBuffers();
+}
+
+/**/
 #endif

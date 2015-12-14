@@ -22,6 +22,9 @@ public:
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, pixel_size, width, height, GL_RGB, GL_UNSIGNED_BYTE, buf);
 	}
+	~Tex() {
+		glDeleteTextures(1, &texture);
+	}
 };
 
 #endif

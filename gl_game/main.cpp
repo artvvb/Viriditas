@@ -32,7 +32,7 @@ Coord get_position(int x, int y) {
 }
 
 GLuint image;
-Font font("Consolas.ttf");
+Font *font;
 
 void display(void)
 {
@@ -49,11 +49,15 @@ void display(void)
 	//cout << fps << endl;
 
 	render(*mygrid, mouse, image);
-	
+
+	/**/
 	if (last_mouse_time + 1000.0f < tick) {
-		char *str = "00\n00\n";
-		render(font, str, Coord(0.1f, 0.1f), mouse);
+		char *str = "01\n23\n";
+		render(*font, str, Coord(0.1f, 0.1f), mouse);
 	}
+	/**/
+
+	//display_text_test();
 
 	glutSwapBuffers();
 }
@@ -118,6 +122,9 @@ int main(int argc, char** argv)
 	cout << "version = " << glGetString(GL_VERSION) << endl;
 
 	image = make_tex_from_bmp("sqr.bmp");
+	font = new Font("Consolas.ttf");
+	if (font->valid == false) cout << "Font initialized incorrectly" << endl;
+	//font_init("Consolas.ttf");
 	//make_tex_from_ttf(font, "Consolas.ttf");
 
 	mygrid = new Grid(MYN);
