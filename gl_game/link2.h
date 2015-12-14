@@ -30,9 +30,10 @@ public:
 	~Link2<T>() {
 		if (data != NULL) delete data;
 		for (int i = 0; i < 4; i++) {
-			if (adj[i] != NULL)
-				adj[i]->adj[(i/2)*2 + (i%2 == 0 ? 1 : 0)];
+			if (adj[i] != NULL) {
+				adj[i]->adj[opposite_dir(i)] = NULL;
 				delete adj[i];
+			}
 		}
 	}
 

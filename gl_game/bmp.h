@@ -13,21 +13,24 @@ Tex *make_tex_from_bmp(const char * imagepath) {
 	unsigned int width, height;
 	unsigned char *data;		// Actual RGB data
 
-	FILE * file;
+	FILE *file;
 
 	fopen_s(&file, imagepath, "rb");	// Open the file
 
 	if (!file) { 
-		cout << "Image could not be opened" << endl; 
+		cout << "Image could not be opened" << endl;
+		fclose(file);
 		return NULL;
 	}
 
 	if (fread(header, 1, HEAD_SIZE, file) != HEAD_SIZE){ // If not 54 bytes read : problem
 		cout << "Not a correct BMP file" << endl;
+		fclose(file);
 		return NULL;
 	}
 	if (header[0] != 'B' || header[1] != 'M'){
 		cout << "Not a correct BMP file" << endl;
+		fclose(file);
 		return NULL;
 	}
 
