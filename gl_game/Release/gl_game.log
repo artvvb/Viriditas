@@ -1,10 +1,10 @@
-﻿Build started 12/13/2015 7:12:33 PM.
+﻿Build started 12/13/2015 9:22:37 PM.
      1>Project "C:\Users\Verdoss\Documents\Visual Studio 2013\Projects\Viriditas\gl_game\gl_game.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
          main.cpp
      1>c:\users\verdoss\documents\visual studio 2013\projects\viriditas\gl_game\render.h(52): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>main.cpp(132): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>main.cpp(136): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Verdoss\Documents\Visual Studio 2013\Projects\Viriditas\Release\gl_game.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib C:\mylib\freeglut\lib\freeglut.lib "C:\Program Files (x86)\GnuWin32\lib\freetype.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Verdoss\Documents\Visual Studio 2013\Projects\Viriditas\Release\gl_game.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Verdoss\Documents\Visual Studio 2013\Projects\Viriditas\Release\gl_game.lib" /MACHINE:X86 /SAFESEH Release\main.obj
          Generating code
@@ -16,4 +16,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.82
+Time Elapsed 00:00:00.76

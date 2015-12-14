@@ -174,6 +174,7 @@ public:
 
 	~Font() {
 		glDeleteTextures(10, textures);
+		delete typeface;
 	}
 
 	GLuint& operator[] (char& c) {

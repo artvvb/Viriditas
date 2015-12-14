@@ -23,6 +23,9 @@ public:
 			insert();
 		randomize();
 	}
+	~Grid() {
+		delete root;
+	}
 
 	void randomize() {
 		Link2<float> *trace[2] = { root, NULL };

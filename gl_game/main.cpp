@@ -94,6 +94,10 @@ void keyboard(unsigned char key, int x, int y)
 	int mod = glutGetModifiers();
 	switch (key) {
 	case 27:
+		delete mygrid;
+		delete font;
+		delete image;
+		system("pause");
 		exit(0);
 		break;
 	case ' ':
