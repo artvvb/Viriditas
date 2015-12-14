@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "link2.h"
+#include "square.h"
 
 class Grid {
 public:
@@ -50,7 +51,7 @@ public:
 		}
 	}
 	void insert() {
-		if (n < 6) {//severe performance issues after around this point
+		if (n < 10) {//severe performance issues after around n = 6
 			insert_horizontal();
 			insert_vertical();
 			cout << m << " : ";
@@ -61,7 +62,7 @@ public:
 		}
 	}
 	void ds_insert() {
-		if (n < 6) {//severe performance issues after around this point
+		if (n < 10) {//severe performance issues after around n = 6
 //			insert_horizontal();
 //			insert_vertical();
 			insert();
@@ -139,6 +140,21 @@ public:
 				trace[0] = trace[0]->adj[L2_RIGHT]->adj[L2_RIGHT];
 			else
 				trace[0] = NULL;
+		}
+	}
+
+	float get_data(Coord &mouse) {
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < m; j++) {
+				Square mysquare;
+				mysquare.center = Coord(new float[2]{//-1.0 -> 1.0
+					2.0f * (((float)i + 0.5f) / (float)m) - 1.0f,
+					-2.0f * (((float)j + 0.5f) / (float)m) + 1.0f,
+				});
+				mysquare.length = 2.0f / (float)m;
+				if (mysquare.within(mouse))
+					return *(root->find(i, j)->data);
+			}
 		}
 	}
 };

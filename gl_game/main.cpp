@@ -49,13 +49,19 @@ void display(void)
 	render(*mygrid, mouse, image->texture);
 
 	//TOOLTIP
+	static bool changed = true;
 	if (last_mouse_time + 1000.0f < tick) {
-		char *str = "01\n23\n";
-		render(*font, str, Coord(0.1f, 0.1f), mouse);
+		static char g_str[8];
+		if (changed) {
+			sprintf_s(g_str, "%.2f\n", mygrid->get_data(mouse));
+			changed = false;
+		}
+		render(*font, g_str, Coord(0.1f, 0.1f), mouse);
 	}
+	else changed = true;
 	
 	//FPS TRACKER
-	//change value once per second
+	//change value once per second, should move this code outside of display
 	static char fps_str[8];
 	if (sec) {
 		sprintf_s(fps_str, "%.2f\n", fps);

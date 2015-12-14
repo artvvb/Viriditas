@@ -56,6 +56,9 @@
     <ClInclude Include="fastmath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="square.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vir-gl.v.glsl">

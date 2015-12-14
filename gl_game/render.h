@@ -6,6 +6,7 @@
 #include "color.h"
 #include "coord.h"
 #include "font.h"
+#include "square.h"
 
 Color normalize(float foo) {
 	//0.0f <= foo <= 1.0f
@@ -19,25 +20,6 @@ void render(const Color& mycolor) {
 void render(Coord& mycoord) {
 	glVertex2f(mycoord['x'], mycoord['y']);
 }
-
-class Square {
-public:
-	float length;
-	Coord center;
-
-	Square() {
-
-	}
-
-	bool within(Coord& point) {
-		return (
-			point['x'] >= center['x'] - length / 2.0f &&
-			point['x'] <= center['x'] + length / 2.0f &&
-			point['y'] >= center['y'] - length / 2.0f &&
-			point['y'] <= center['y'] + length / 2.0f
-		);
-	}
-};
 
 void render(GLuint tex, Coord& size, Coord& origin) {
 	glEnable(GL_TEXTURE_2D);
