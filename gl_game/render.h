@@ -50,6 +50,8 @@ void render(GLuint tex, Coord& size, Coord& origin) {
 	glTexCoord2d(1.0, 1.0); glVertex2f(origin['x'] + size['x'], origin['y'] - size['y']);
 	glTexCoord2d(0.0, 1.0); glVertex2f(origin['x'], origin['y'] - size['y']);
 	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
 }
 
 void render(Color& color, Coord& size, Coord& origin) {
@@ -95,9 +97,7 @@ void render(Grid& mygrid, Coord& mouse, GLuint image) {
 			render(mycolor);
 			render(mysquare, tex);
 			glEnd();
-			if (tex)
-				glDisable(GL_TEXTURE_2D);
-
+			if (tex) glDisable(GL_TEXTURE_2D);
 		}
 	}
 
@@ -131,7 +131,7 @@ void tex_test(GLuint image) {
 
 //renders a rectangle of size size with upper left corner at origin
 
-void render(GLuint font, char *str, Coord& size, Coord& origin) {
+void render(GLuint texture, char *str, Coord& size, Coord& origin) {
 	Coord off(origin);
 	while (*str) {
 		if (*str == '\n') {
@@ -139,7 +139,7 @@ void render(GLuint font, char *str, Coord& size, Coord& origin) {
 			off['y'] -= size['y'];
 		}
 		else {
-			render(font, size, off);
+			render(texture, size, off);
 			off['x'] += size['x'];
 		}
 		str++;

@@ -33,6 +33,8 @@ Coord get_position(int x, int y) {
 Tex *image;
 Font *font;
 
+bool sec = true;
+
 void display(void)
 {
 	static unsigned int last_time = (unsigned)clock();
@@ -43,20 +45,23 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.5, 0.5, 0.5, 1.0);
 
-	char fps_str[7];
-	sprintf_s(fps_str, "%.2f", fps);
-	//cout << fps << endl;
-
+	//FRACTAL GRID
 	render(*mygrid, mouse, image->texture);
 
-	/**/
+	//TOOLTIP
 	if (last_mouse_time + 1000.0f < tick) {
 		char *str = "01\n23\n";
 		render(*font, str, Coord(0.1f, 0.1f), mouse);
 	}
-	/**/
-
-	//display_text_test();
+	
+	//FPS TRACKER
+	//change value once per second
+	static char fps_str[8];
+	if (sec) {
+		sprintf_s(fps_str, "%.2f\n", fps);
+		sec = false;
+	}
+	render(*font, fps_str, Coord(0.1f, 0.1f), get_position(0, 0));
 
 	glutSwapBuffers();
 }
@@ -101,6 +106,11 @@ void keyboard(unsigned char key, int x, int y)
 void timer(int te)
 {
 	tick += 10.0;//ms
+	if (tick >= 1000.0) {
+		tick -= 1000.0;
+		last_mouse_time -= 1000.0;
+		sec = true;
+	}
 	glutPostRedisplay();//redraw
 	glutTimerFunc(10, timer, 1);//re-call in another 10ms
 	return;
@@ -122,7 +132,7 @@ int main(int argc, char** argv)
 
 	image = make_tex_from_bmp("sqr.bmp");
 	
-	font = new Font("Consolas.ttf");
+	font = new Font("Consolas.ttf", "0123456789.");
 	if (font->valid == false) cout << "Font initialized incorrectly" << endl;
 
 

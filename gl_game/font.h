@@ -65,8 +65,12 @@ void make_tex_from_ttf(GLuint font[256], char *filename) {
 class Font {
 public:
 	FT_Library  library;
+
 	FT_Face     face;
-	GLuint textures[10];//starting with numeric only
+	GLuint *textures;//starting with numeric only
+	char *typeface;
+	int size;
+
 	bool valid;
 	int width, height;
 
@@ -92,7 +96,7 @@ public:
 		return 0;
 	}
 
-	Font(char *filename) {
+	Font(char *filename, char *_typeface) {
 		valid = false;
 
 		if (freetype_init(filename))
@@ -100,10 +104,15 @@ public:
 		
 		FT_Set_Pixel_Sizes(face, 64, 0);
 
-		glGenTextures(10, textures);
+		size = strlen(_typeface);
+		typeface = new char[size];
+		for (int i = 0; i < size; i++)
+			typeface[i] = _typeface[i];
+		textures = new GLuint[size];
+		glGenTextures(size, textures);
 
-		for (int i = 0; i < 10; i++) {
-			char c = '0' + i;
+		for (int i = 0; i < size; i++) {
+			char c = typeface[i];
 			FT_UInt glyph_index = FT_Get_Char_Index(face, c);
 			FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
 
@@ -167,8 +176,12 @@ public:
 		glDeleteTextures(10, textures);
 	}
 
-	GLuint& operator[] (char c) {
-		return textures[c - '0'];
+	GLuint& operator[] (char& c) {
+		for (int i = 0; i < size; i++) {
+			if (c == typeface[i])
+				return textures[i];
+		}
+		return textures[0];
 	}
 };
 
