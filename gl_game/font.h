@@ -4,6 +4,7 @@
 #include "main.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
 //http://nehe.gamedev.net/tutorial/freetype_fonts_in_opengl/24001/
 //http://www.freetype.org/freetype2/docs/tutorial/step1.html
 void make_tex_from_ttf(GLuint font[256], char *filename) {
@@ -20,32 +21,41 @@ void make_tex_from_ttf(GLuint font[256], char *filename) {
 	else if (error) {
 		cout << "Failed to open font file" << endl;
 	}
-
-	error = FT_Set_Char_Size(
-		face,		/* handle to face object           */
-		0,			/* char_width in 1/64th of points  */
-		16 * 64,	/* char_height in 1/64th of points */
-		800,		/* horizontal device resolution    */
-		800			/* vertical device resolution      */
+	FT_Set_Pixel_Sizes(
+		face,
+		64,
+		0
+		);
+	/*/
+	FT_Set_Char_Size(
+		face,		// handle to face object          
+		0,			// char_width in 1/64th of points 
+		16 * 64,	// char_height in 1/64th of points
+		800,		// horizontal device resolution   
+		800			// vertical device resolution     
 	);
-
+	/**/
 	FT_UInt glyph_index = FT_Get_Char_Index(face, '0');
 	FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+	if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP)
+		FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);//8 bit greyscale
+
 	//FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
 	FT_Bitmap* bitmap = &face->glyph->bitmap;
-	Tex zero (
-		(unsigned char*)bitmap->buffer,
-		(int)bitmap->width,
-		(int)bitmap->rows
-	);
-
 	cout << "'0': width = " << bitmap->width << endl;
 	cout << "'0': rows  = " << bitmap->rows  << endl;
+
+	Tex zero (
+		(unsigned char*)bitmap->buffer,
+		(int)bitmap->width,//
+		(int)bitmap->rows,
+		1
+	);
 
 	font['0'] = zero.texture;
 }
 
-
+/*/
 FT_Library ft;
 FT_Face face;
 GLuint tex;
@@ -67,8 +77,8 @@ GLuint font_init() {
 		fprintf(stderr, "Could not load character 'X'\n");
 		return 1;
 	}
-	//Tex mytex(buf, width, height); creates a mipmap texture from a character buffer of RGBRGB... values
-	/**/
+	//Tex mytex(buf, width, height); creates a mipmap(?) texture from a character buffer of RGBRGB... values
+//
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -78,8 +88,8 @@ GLuint font_init() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	/**/
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+//
 
 	GLuint vbo;
 	glGenBuffers(1, &vbo);
@@ -155,5 +165,5 @@ void display_text_test() {//display() already exists in main, to run this code, 
 
 	glutSwapBuffers();
 }
-
+/**/
 #endif

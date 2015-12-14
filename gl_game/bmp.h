@@ -18,14 +18,17 @@ GLuint make_tex_from_bmp(const char * imagepath) {
 
 	fopen_s(&file, imagepath, "rb");	// Open the file
 
-	if (!file) { printf("Image could not be opened\n"); return 0; }
+	if (!file) { 
+		cout << "Image could not be opened" << endl; 
+		return 0;
+	}
 
 	if (fread(header, 1, HEAD_SIZE, file) != HEAD_SIZE){ // If not 54 bytes read : problem
-		printf("Not a correct BMP file\n");
-		return false;
+		cout << "Not a correct BMP file" << endl;
+		return 0;
 	}
 	if (header[0] != 'B' || header[1] != 'M'){
-		printf("Not a correct BMP file\n");
+		cout << "Not a correct BMP file" << endl;
 		return 0;
 	}
 
@@ -52,7 +55,7 @@ GLuint make_tex_from_bmp(const char * imagepath) {
 	//Everything is in memory now, the file can be closed
 	fclose(file);
 
-	Tex mytex(data, width, height);
+	Tex mytex(data, width, height, 3);
 
 	delete data;
 
