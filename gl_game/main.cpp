@@ -32,7 +32,7 @@ Coord get_position(int x, int y) {
 }
 
 GLuint image;
-GLuint font[256];
+Font font("Consolas.ttf");
 
 void display(void)
 {
@@ -52,7 +52,7 @@ void display(void)
 	
 	if (last_mouse_time + 1000.0f < tick) {
 		char *str = "00\n00\n";
-		render(font['0'], str, Coord(0.1f, 0.1f), mouse);
+		render(font, str, Coord(0.1f, 0.1f), mouse);
 	}
 
 	glutSwapBuffers();
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 	cout << "version = " << glGetString(GL_VERSION) << endl;
 
 	image = make_tex_from_bmp("sqr.bmp");
-	make_tex_from_ttf(font, "Consolas.ttf");
+	//make_tex_from_ttf(font, "Consolas.ttf");
 
 	mygrid = new Grid(MYN);
 

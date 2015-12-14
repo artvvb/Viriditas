@@ -5,6 +5,7 @@
 #include "grid.h"
 #include "color.h"
 #include "coord.h"
+#include "font.h"
 
 Color normalize(float foo) {
 	//0.0f <= foo <= 1.0f
@@ -38,8 +39,35 @@ public:
 	}
 };
 
+void render(GLuint tex, Coord& size, Coord& origin) {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	glBegin(GL_QUADS);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glTexCoord2d(0.0, 0.0); glVertex2f(origin['x'], origin['y']);
+	glTexCoord2d(1.0, 0.0); glVertex2f(origin['x'] + size['x'], origin['y']);
+	glTexCoord2d(1.0, 1.0); glVertex2f(origin['x'] + size['x'], origin['y'] - size['y']);
+	glTexCoord2d(0.0, 1.0); glVertex2f(origin['x'], origin['y'] - size['y']);
+	glEnd();
+}
+
+void render(Color& color, Coord& size, Coord& origin) {
+	glEnable(GL_TEXTURE_2D);
+
+	glBegin(GL_QUADS);
+	render(color);
+	glVertex2f(origin['x'], origin['y']);
+	glVertex2f(origin['x'] + size['x'], origin['y']);
+	glVertex2f(origin['x'] + size['x'], origin['y'] - size['y']);
+	glVertex2f(origin['x'], origin['y'] - size['y']);
+	glEnd();
+}
+
 void render(Square& mysquare, bool textured = false) {
 	float mag = mysquare.length / sqrt(2);
+	Coord origin = get_vector(mysquare.center, 135.0f, mag);
+	
 	if (textured) glTexCoord2f(0.0f, 0.0f); render(get_vector(mysquare.center,  45.0f, mag));
 	if (textured) glTexCoord2f(0.0f, 1.0f); render(get_vector(mysquare.center, 135.0f, mag));
 	if (textured) glTexCoord2f(1.0f, 1.0f); render(get_vector(mysquare.center, 225.0f, mag));
@@ -102,18 +130,6 @@ void tex_test(GLuint image) {
 }
 
 //renders a rectangle of size size with upper left corner at origin
-void render(GLuint tex, Coord& size, Coord& origin) {
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, tex);
-
-	glBegin(GL_QUADS);
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glTexCoord2d(0.0, 0.0); glVertex2f(origin['x'],				origin['y']				);
-	glTexCoord2d(1.0, 0.0); glVertex2f(origin['x'] + size['x'], origin['y']				);
-	glTexCoord2d(1.0, 1.0); glVertex2f(origin['x'] + size['x'], origin['y'] - size['y']	);
-	glTexCoord2d(0.0, 1.0); glVertex2f(origin['x'],				origin['y'] - size['y']	);
-	glEnd();
-}
 
 void render(GLuint font, char *str, Coord& size, Coord& origin) {
 	Coord off(origin);
@@ -124,6 +140,22 @@ void render(GLuint font, char *str, Coord& size, Coord& origin) {
 		}
 		else {
 			render(font, size, off);
+			off['x'] += size['x'];
+		}
+		str++;
+	}
+}
+
+void render(Font font, char *str, Coord& size, Coord& origin) {
+	Coord off(origin);
+	while (*str) {
+		if (*str == '\n') {
+			//should probably process rectangles to fit the size of the character
+			off['x'] = origin['x'];
+			off['y'] -= size['y'];
+		}
+		else {
+			render(font[*str], size, off);
 			off['x'] += size['x'];
 		}
 		str++;

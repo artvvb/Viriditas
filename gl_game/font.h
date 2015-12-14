@@ -2,11 +2,13 @@
 #define _FONT_H_
 
 #include "main.h"
+#include "tex.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 //http://nehe.gamedev.net/tutorial/freetype_fonts_in_opengl/24001/
 //http://www.freetype.org/freetype2/docs/tutorial/step1.html
+
 void make_tex_from_ttf(GLuint font[256], char *filename) {
 	FT_Library  library;
 	FT_Face     face;
@@ -24,7 +26,7 @@ void make_tex_from_ttf(GLuint font[256], char *filename) {
 	FT_Set_Pixel_Sizes(
 		face,
 		64,
-		0
+		64
 		);
 	/*/
 	FT_Set_Char_Size(
@@ -54,6 +56,70 @@ void make_tex_from_ttf(GLuint font[256], char *filename) {
 
 	font['0'] = zero.texture;
 }
+
+class Font {
+public:
+	FT_Library  library;
+	FT_Face     face;
+	GLuint textures[10];//starting with numeric only
+	int width, height;//character size
+	bool valid;
+
+	Font(char *filename) {
+		int error;
+
+		valid = false;
+		
+		if (FT_Init_FreeType(&library)) {
+			cout << "Freetype library initialization failed" << endl;
+			return;
+		}
+		error = FT_New_Face(library, filename, 0, &face);
+		if (error == FT_Err_Unknown_File_Format) {
+			cout << "Font file format unsupported" << endl;
+			return;
+		}
+		else if (error) {
+			cout << "Failed to open font file" << endl;
+			return;
+		}
+		FT_Set_Pixel_Sizes(
+			face,
+			128,
+			128
+		);
+
+		glGenTextures(10, textures);
+
+		for (int i = 0; i < 10; i++) {
+			char c = '0' + i;
+			FT_UInt glyph_index = FT_Get_Char_Index(face, c);
+			FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+
+			if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP)
+				FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);//8 bit greyscale
+
+			FT_Bitmap* bitmap = &face->glyph->bitmap;
+			cout << c << ": width = " << bitmap->width << endl;
+			cout << c << ": rows  = " << bitmap->rows << endl;
+
+			glBindTexture(GL_TEXTURE_2D, textures[i]);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			gluBuild2DMipmaps(GL_TEXTURE_2D, 1, (int)bitmap->width, (int)bitmap->rows, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char*)bitmap->buffer);
+			cout << textures[i] << endl;
+		}
+		valid = true;
+	}
+
+	GLuint& operator[] (char c) {
+		return textures[c - '0'];
+	}
+};
 
 /*/
 FT_Library ft;
